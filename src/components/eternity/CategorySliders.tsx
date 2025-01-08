@@ -44,6 +44,7 @@ const CategorySlider = ({
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
+    loop: true,
     slides: {
       perView: slidesPerView,
       spacing: 16,
