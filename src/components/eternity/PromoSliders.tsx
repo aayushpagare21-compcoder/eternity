@@ -32,7 +32,7 @@ const PromoSlider = (slide: PromoSliderData) => {
           >
             {genre}
           </Badge>
-          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 font-[family-name:var(--font-geist-sans)]">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 font-[family-name:var(--font-geist-sans)]">
             {title}
           </h1>
           <div className="flex items-center gap-4 text-zinc-300 mb-4 flex-wrap">

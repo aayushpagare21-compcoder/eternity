@@ -18,42 +18,25 @@ const CategorySlider = ({
   isLoading: boolean;
 }) => {
   const [loadedImages, setLoadedImages] = useState(new Set());
-  const [slidesPerView, setSlidesPerView] = useState(4);
-  
-  useEffect(() => {
-    const updateSlidesPerView = () => {
-      const width = window.innerWidth;
-      if (width < 640) {
-        setSlidesPerView(1.5);
-      } else if (width < 768) {
-        setSlidesPerView(2);
-      } else if (width < 1024) {
-        setSlidesPerView(3);
-      } else {
-        setSlidesPerView(4);
-      }
-    };
-
-    // Initial check
-    updateSlidesPerView();
-
-    // Add resize listener
-    window.addEventListener('resize', updateSlidesPerView);
-    return () => window.removeEventListener('resize', updateSlidesPerView);
-  }, []);
-
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
-    initial: 0,
     loop: true,
     slides: {
-      perView: slidesPerView,
+      perView: 4,
       spacing: 16,
     },
-    created(s) {
-      // Force update on creation to ensure correct slide sizing
-      setTimeout(() => {
-        s.update();
-      }, 100);
+    breakpoints: {
+      "(max-width: 1500px)": {
+        slides: { perView: 4, spacing: 16 },
+      },
+      "(max-width: 1024px)": {
+        slides: { perView: 3, spacing: 12 },
+      },
+      "(max-width: 768px)": {
+        slides: { perView: 2, spacing: 8 },
+      },
+      "(max-width: 640px)": {
+        slides: { perView: 1.5, spacing: 8 },
+      },
     },
   });
 
@@ -89,7 +72,13 @@ const CategorySlider = ({
         {isLoading
           ? Array(4)
               .fill(0)
-              .map((_, idx) => <CategoryCardSkeleton key={idx} />)
+              .map((_, idx) => (
+                <div key={idx} className="keen-slider__slide">
+                  <div className="px-2">
+                    <CategoryCardSkeleton />
+                  </div>
+                </div>
+              ))
           : items.map((category, idx) => (
               <div key={idx} className="keen-slider__slide">
                 <div className="px-2">
