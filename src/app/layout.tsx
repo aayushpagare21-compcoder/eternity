@@ -16,6 +16,7 @@ const asapCondensed = Asap_Condensed({
   variable: "--font-asap",
   subsets: ["latin"],
   weight: "400",
+  preload: false, // Disable preloading
 });
 
 export const metadata: Metadata = {
