@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 
 const asapCondensed = Asap_Condensed({
   variable: "--font-asap",
+  subsets: ["latin"],
   weight: "400",
 });
 
