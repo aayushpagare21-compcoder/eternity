@@ -1,6 +1,5 @@
-"use client";
 import { useKeenSlider } from "keen-slider/react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CategoryCardSkeleton } from "./CardSkeleton";
@@ -19,22 +18,41 @@ const CategorySlider = ({
   isLoading: boolean;
 }) => {
   const [loadedImages, setLoadedImages] = useState(new Set());
-  const [sliderRef, sliderInstanceRef] = useKeenSlider({
-    loop: true,
+  const [slidesPerView, setSlidesPerView] = useState(4);
+  
+  useEffect(() => {
+    const updateSlidesPerView = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setSlidesPerView(1.5);
+      } else if (width < 768) {
+        setSlidesPerView(2);
+      } else if (width < 1024) {
+        setSlidesPerView(3);
+      } else {
+        setSlidesPerView(4);
+      }
+    };
+
+    // Initial check
+    updateSlidesPerView();
+
+    // Add resize listener
+    window.addEventListener('resize', updateSlidesPerView);
+    return () => window.removeEventListener('resize', updateSlidesPerView);
+  }, []);
+
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
     slides: {
-      perView: 4,
+      perView: slidesPerView,
       spacing: 16,
     },
-    breakpoints: {
-      "(max-width: 1024px)": {
-        slides: { perView: 3, spacing: 12 },
-      },
-      "(max-width: 768px)": {
-        slides: { perView: 2, spacing: 8 },
-      },
-      "(max-width: 640px)": {
-        slides: { perView: 1.5, spacing: 8 },
-      },
+    created(s) {
+      // Force update on creation to ensure correct slide sizing
+      setTimeout(() => {
+        s.update();
+      }, 100);
     },
   });
 
@@ -50,7 +68,7 @@ const CategorySlider = ({
           <Button
             variant="outline"
             size="icon"
-            onClick={() => sliderInstanceRef.current?.prev()}
+            onClick={() => instanceRef.current?.prev()}
             className="rounded-full hover:scale-110 transition-all duration-300"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -58,7 +76,7 @@ const CategorySlider = ({
           <Button
             variant="outline"
             size="icon"
-            onClick={() => sliderInstanceRef.current?.next()}
+            onClick={() => instanceRef.current?.next()}
             className="rounded-full hover:scale-110 transition-all duration-300"
           >
             <ChevronRight className="w-4 h-4" />
@@ -72,30 +90,32 @@ const CategorySlider = ({
               .fill(0)
               .map((_, idx) => <CategoryCardSkeleton key={idx} />)
           : items.map((category, idx) => (
-              <div key={idx} className="keen-slider__slide px-2">
-                <Card className="overflow-hidden bg-zinc-900 border-zinc-800 group hover:scale-105 transition-all duration-500">
-                  <CardContent className="p-0 relative aspect-[4/3]">
-                    {!loadedImages.has(category.title) && (
-                      <div className="absolute inset-0 bg-gradient-to-b from-zinc-800 to-zinc-900 animate-pulse" />
-                    )}
-                    <Image
-                      src={category.image}
-                      alt={category.title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                      onLoad={() => handleImageLoad(category.title)}
-                      sizes="(max-width: 640px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 25vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
-                    <div className="absolute bottom-0 left-0 p-4">
-                      <h3 className="text-xl font-bold text-white mb-1">
-                        {category.title}
-                      </h3>
-                      <p className="text-sm text-zinc-300">{category.count}</p>
-                    </div>
-                  </CardContent>
-                </Card>
+              <div key={idx} className="keen-slider__slide">
+                <div className="px-2">
+                  <Card className="overflow-hidden bg-zinc-900 border-zinc-800 group hover:scale-105 transition-all duration-500">
+                    <CardContent className="p-0 relative aspect-[4/3]">
+                      {!loadedImages.has(category.title) && (
+                        <div className="absolute inset-0 bg-gradient-to-b from-zinc-800 to-zinc-900 animate-pulse" />
+                      )}
+                      <Image
+                        src={category.image}
+                        alt={category.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                        onLoad={() => handleImageLoad(category.title)}
+                        sizes="(max-width: 640px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 25vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+                      <div className="absolute bottom-0 left-0 p-4">
+                        <h3 className="text-xl font-bold text-white mb-1">
+                          {category.title}
+                        </h3>
+                        <p className="text-sm text-zinc-300">{category.count}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             ))}
       </div>
