@@ -103,7 +103,7 @@ export const CATEGORIES: MockCategoriesData = {
         link: "/korean",
         count: "178 movies",
         image:
-          "https://images.unsplash.com/photo-1488814753891-99aa32036fd4?q=80&w=1470&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1925&auto=format&fit=cr",
       },
       {
         title: "Spanish",
